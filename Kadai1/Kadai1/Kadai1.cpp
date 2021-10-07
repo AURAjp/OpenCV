@@ -32,6 +32,27 @@ int main() {
     // リサイズ
     resize(srcImg, dstImg, dstImg.size());
 
+    // 市松模様の数
+    int checkerNum = 10;
+    // 市松模様の幅
+    double checkerWidth = width / checkerNum;
+    // 市松模様の高さ
+    double checkerHeight = height / checkerNum;
+
+    // x,y軸についてそれぞれ0から画像の横幅,高さ分まで市松模様1個分ずつ増やしていく
+    for (int y = 0; y < height; y = y + checkerHeight) {
+        for (int x = 0; x < width; x = checkerWidth) {
+            rectangle(dstImg, 
+                Point(x, y), 
+                Point(x + checkerWidth, y + checkerHeight),
+                Scalar(0, 0, 255), -1, CV_AA);
+            rectangle(dstImg,
+                Point(x + checkerWidth, y + checkerHeight),
+                Point(x + 2 * checkerWidth, y + 2 * checkerHeight),
+                Scalar(0, 0, 255), -1, CV_AA);
+        }
+    }
+
     // 出力画像を表示
     imshow("img", dstImg);
     // 出力画像を保存
