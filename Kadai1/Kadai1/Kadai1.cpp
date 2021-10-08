@@ -47,9 +47,9 @@ int main() {
     // 市松模様の数
     int checkerNum = 10;
     // 市松模様の幅
-    double checkerWidth = width / checkerNum;
+    int checkerWidth = width / checkerNum;
     // 市松模様の高さ
-    double checkerHeight = height / checkerNum;
+    int checkerHeight = height / checkerNum;
 
     // x,y軸についてそれぞれ0から画像の横幅,高さ分まで市松模様1個分ずつ増やしていく
     for (int y = 0; y < height; y += checkerHeight * 2) {
