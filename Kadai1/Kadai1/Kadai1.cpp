@@ -57,18 +57,18 @@ int main() {
             rectangle(dstImg, 
                 Point(x, y), 
                 Point(x + checkerWidth, y + checkerHeight),
-                Scalar(0, 0, 255), -1, CV_AA);
+                Scalar(0, 255, 0), -1, CV_AA);
             rectangle(dstImg,
                 Point(x + checkerWidth, y + checkerHeight),
                 Point(x + 2 * checkerWidth, y + 2 * checkerHeight),
-                Scalar(0, 0, 255), -1, CV_AA);
+                Scalar(0, 255, 0), -1, CV_AA);
         }
     }
 
     // 出力画像を表示
     imshow("img", dstImg);
     // 出力画像を保存
-    imwrite("out.jpg", dstImg);
+    imwrite("./img/out.jpg", dstImg);
 
     // キーボードが押されるまで処理を待つ
     waitKey(0);
