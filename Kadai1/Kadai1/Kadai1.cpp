@@ -52,8 +52,8 @@ int main() {
     double checkerHeight = height / checkerNum;
 
     // x,y軸についてそれぞれ0から画像の横幅,高さ分まで市松模様1個分ずつ増やしていく
-    for (int y = 0; y < height; y = y + checkerHeight) {
-        for (int x = 0; x < width; x = checkerWidth) {
+    for (int y = 0; y < height; y += checkerHeight) {
+        for (int x = 0; x < width; x += checkerWidth) {
             rectangle(dstImg, 
                 Point(x, y), 
                 Point(x + checkerWidth, y + checkerHeight),
