@@ -35,18 +35,6 @@ int main() {
         return -1;
     }
 
-    // 入力画像のアスペクト比
-    double aspectRatio = (double) srcImg.rows / srcImg.cols;
-    // 出力画像の横幅
-    int width = 800;
-    // アスペクト比を保持した高さ
-    int height = aspectRatio * width;
-
-    // リサイズ用画像領域の確保
-    Mat resizeImg(height, width, srcImg.type());
-    // リサイズ
-    resize(srcImg, resizeImg, resizeImg.size());
-
     // 画像をdouble型に変換
     filterImg.convertTo(filterImg, CV_64F);
     // 総和を求める
@@ -55,9 +43,9 @@ int main() {
     filterImg = filterImg * (1. / sumImg);
 
     // 出力用画像領域の確保
-    Mat outImg(height, width, srcImg.type());
-    // リサイズした画像にフィルターをかける
-    filter2D(resizeImg, outImg, 8, filterImg);
+    Mat outImg(srcImg.cols, srcImg.rows, srcImg.type());
+    // 入力画像にフィルターをかける
+    filter2D(srcImg, outImg, 8, filterImg);
 
     // 出力画像を表示
     imshow("img", outImg);
