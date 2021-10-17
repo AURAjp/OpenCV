@@ -24,8 +24,8 @@ using namespace cv;
 
 int main()
 {
-	// 画像ファイルを読み込む
-	Mat src_img = imread("./img/in.jpg", IMREAD_COLOR);
+	// 画像ファイルをグレースケールで読み込む
+	Mat src_img = imread("./img/in.jpg", IMREAD_GRAYSCALE);
 	// 読み込んだ画像のNULLチェック
 	if (src_img.empty()) {
 		return -1;
