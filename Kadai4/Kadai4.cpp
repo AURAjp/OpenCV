@@ -22,37 +22,9 @@ using namespace cv;
 #pragma comment(lib, "opencv_calib3d2413.lib")
 #endif
 
-// DFTのための複素画像を作成する
-void create_complex_dft_image(const Mat& in, Mat& out)
-{
-	Mat real_image; // 複素画像の実部
-
-	/**
-	 * DFTを行うには画像の両辺それぞれがDFTに適したサイズであることが必要。
-	 * 入力画像をDFTに適したサイズに拡大してコピーした上であまりを塗りつぶす。
-	 *
-	 * getOptimalDFTSize()はDFT入力された大きさに対してDFTに適した大きさを返す。
-	 *
-	 * copyMakeBorder()は入力画像の周囲を指定幅分だけ塗りつぶして出力画像に
-	 * コピーする。
-	 *
-	 * 今回は、DFTのサイズに拡大する分だけ右端と下端を0で塗りつぶしている。
-	 */
-	copyMakeBorder(in, real_image,
-		0, getOptimalDFTSize(in.rows) - in.rows,
-		0, getOptimalDFTSize(in.cols) - in.cols,
-		BORDER_CONSTANT, Scalar::all(0));
-
-	// 0で埋めた虚部とマージして複素画像にする。
-	Mat planes[] = { Mat_<float>(real_image), Mat::zeros(real_image.size(), CV_32F) };
-	merge(planes, 2, out);
-}
-
 // DFTの結果である複素画像を表示用の強度画像に変換する。
 void create_fourier_magnitude_image_from_complex(const Mat& in, Mat& out)
 {
-	using namespace cv;
-
 	/**
 	 * 複素画像の実部と虚部を2枚の画像に分離する。
 	 */
@@ -123,8 +95,6 @@ void create_fourier_magnitude_image_from_complex(const Mat& in, Mat& out)
 void create_inverse_fourier_image_from_complex(
 	const Mat& in, const::Mat& origin, Mat& out)
 {
-	using namespace cv;
-
 	// 複素画像の実部と虚部を2枚の画像に分離する。
 	Mat splitted_image[2];
 	split(in, splitted_image);
@@ -138,76 +108,75 @@ void create_inverse_fourier_image_from_complex(
 	normalize(out, out, 0, 1, CV_MINMAX);
 }
 
-int main()
+/**
+ * @fn
+ * アスペクト比を保持したリサイズを行う.
+ * @param image 画像データ
+ **/
+Mat resize(const Mat& image)
 {
-	// 画像の読み込み
-	auto src_img = imread("./img/in.jpg", IMREAD_GRAYSCALE);
-	if (src_img.empty())
-	{
-		return -1;
-	}
-
 	// 入力画像のアスペクト比
-	auto aspect_ratio = (double)src_img.rows / src_img.cols;
+	auto aspect_ratio = (double)image.rows / image.cols;
 	// 出力画像の横幅
 	constexpr auto width = 800;
 	// アスペクト比を保持した高さ
 	int height = aspect_ratio * width;
 
 	// リサイズ用画像領域の確保
-	Mat resize_img(height, width, src_img.type());
+	Mat resize_img(height, width, image.type());
 	// リサイズ
-	resize(src_img, resize_img, resize_img.size());
+	resize(image, resize_img, resize_img.size());
 
+	return resize_img;
+}
+
+int main()
+{
+	// 画像の読み込み
+	auto src_img = imread("./img/in.jpg", IMREAD_GRAYSCALE);
+	// 読み込んだ画像のNULLチェック
+	if (src_img.empty())
+	{
+		return -1;
+	}
+
+	// 画像サイズをリサイズ
+	auto resize_img = resize(src_img);
+
+	//実部のみのimageと虚部を0で初期化したMatをplanes配列に入れる
+	Mat planes[] = {
+		Mat_<float>(resize_img), Mat::zeros(resize_img.size(), CV_32F)
+	};
 	// フーリエ変換のために適切なサイズの複素画像を作る
 	Mat complex_image;
-	create_complex_dft_image(resize_img, complex_image);
+	//配列を合成
+	merge(planes, 2, complex_image);
 
-	/**
-	 * フーリエ変換
-	 *
-	 * 複素画像から複素画像へ変換する。ここでは入力画像自体を出力先にしている。
-	 *
-	 * 呼び出し時のオプションにより複素画像から実画像への変換などもできる。
-	 */
+	// フーリエ変換
 	dft(complex_image, complex_image);
-
 	// フーリエ変換の結果の可視化
 	Mat magnitude_image;
 	create_fourier_magnitude_image_from_complex(complex_image, magnitude_image);
 
-	/**
-	 * 逆フーリエ変換
-	 *
-	 * 複素画像から複素画像へ変換する。ここでは入力画像自体を出力先にしている。
-	 *
-	 * 呼び出し時のオプションにより複素画像から実画像への変換などもできる。
-	 */
+	// 逆フーリエ変換
 	idft(complex_image, complex_image);
-
 	// 逆フーリエ変換の結果の可視化
 	Mat idft_image;
 	create_inverse_fourier_image_from_complex(complex_image, resize_img, idft_image);
 
 	// 結果表示
-	namedWindow("original");
 	imshow("original", resize_img);
-
-	namedWindow("dft");
 	imshow("dft", magnitude_image);
-
-	namedWindow("idft");
 	imshow("idft", idft_image);
 
-	waitKey(0);
-
 	/**
-	 * 結果画像の保存
-	 *
-	 * 表示画像は浮動小数表現で値域が[0,1]なので255を掛けたものを入力とする。
+	 * 結果画像の保存.<br>
+	 * 表示画像は浮動小数表現で値域が[0,1]なので255を掛けたものを入力とする.
 	 */
 	imwrite("./img/dft.png", magnitude_image * 255);
 	imwrite("./img/idft.png", idft_image * 255);
+
+	waitKey(0);
 
 	return 0;
 }
