@@ -108,28 +108,6 @@ void convert_image_from_IDFT(
 	normalize(out, out, 0, 1, CV_MINMAX);
 }
 
-/**
- * @fn
- * アスペクト比を保持したリサイズを行う.
- * @param image 画像データ
- **/
-Mat resize(const Mat& image)
-{
-	// 入力画像のアスペクト比
-	auto aspect_ratio = (double)image.rows / image.cols;
-	// 出力画像の横幅
-	constexpr auto width = 800;
-	// アスペクト比を保持した高さ
-	int height = aspect_ratio * width;
-
-	// リサイズ用画像領域の確保
-	Mat resize_img(height, width, image.type());
-	// リサイズ
-	resize(image, resize_img, resize_img.size());
-
-	return resize_img;
-}
-
 int main()
 {
 	// 画像の読み込み
@@ -139,9 +117,18 @@ int main()
 	{
 		return -1;
 	}
+	
+	// 入力画像のアスペクト比
+	auto aspect_ratio = (double)src_img.rows / src_img.cols;
+	// 出力画像の横幅
+	constexpr auto WIDTH = 800;
+	// アスペクト比を保持した高さ
+	int height = aspect_ratio * WIDTH;
 
-	// 画像サイズをリサイズ
-	auto resize_img = resize(src_img);
+	// リサイズ用画像領域の確保
+	Mat resize_img(height, WIDTH, src_img.type());
+	// リサイズ
+	resize(src_img, resize_img, resize_img.size());
 
 	//実部のみのimageと虚部を0で初期化したMatをplanes配列に入れる
 	Mat planes[] = {
