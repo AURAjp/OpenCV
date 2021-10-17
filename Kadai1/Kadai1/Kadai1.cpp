@@ -27,48 +27,48 @@ using namespace std;
 int main() {
 
     // 画像ファイルを読み込む
-    Mat srcImg = imread("./img/in.jpg");
-    if (srcImg.empty()) { 
+    Mat src_img = imread("./img/in.jpg");
+    if (src_img.empty()) {
         return -1;
     }
 
     // 入力画像のアスペクト比
-    double aspectRatio = (double) srcImg.rows / srcImg.cols;
+    double aspect_ratio = (double)src_img.rows / src_img.cols;
     // 出力画像の横幅
-    int width = 800;
+    constexpr int width = 800;
     // アスペクト比を保持した高さ
-    int height = aspectRatio * width;
+    int height = aspect_ratio * width;
 
     // 出力用画像領域の確保
-    Mat dstImg(height, width, srcImg.type());
+    Mat dst_img(height, width, src_img.type());
     // リサイズ
-    resize(srcImg, dstImg, dstImg.size());
+    resize(src_img, dst_img, dst_img.size());
 
     // 市松模様の数
-    int checkerNum = 10;
+    int checker_num = 10;
     // 市松模様の幅
-    int checkerWidth = width / checkerNum;
+	int checker_width = width / checker_num;
     // 市松模様の高さ
-    int checkerHeight = height / checkerNum;
+    int checker_height = height / checker_num;
 
     // x,y軸についてそれぞれ0から画像の横幅,高さ分まで市松模様1個分ずつ増やしていく
-    for (int y = 0; y < height; y += checkerHeight * 2) {
-        for (int x = 0; x < width; x += checkerWidth * 2) {
+    for (int y = 0; y < height; y += checker_height * 2) {
+		for (int x = 0; x < width; x += checker_width * 2) {
             rectangle(dstImg, 
                 Point(x, y), 
-                Point(x + checkerWidth, y + checkerHeight),
+                Point(x + checker_width, y + checker_height),
                 Scalar(0, 255, 0), -1, CV_AA);
             rectangle(dstImg,
-                Point(x + checkerWidth    , y + checkerHeight    ),
-                Point(x + checkerWidth * 2, y + checkerHeight * 2),
+                Point(x + checker_width, y + checker_height),
+                Point(x + checker_width * 2, y + checker_height * 2),
                 Scalar(0, 255, 0), -1, CV_AA);
         }
     }
 
     // 出力画像を表示
-    imshow("img", dstImg);
+    imshow("img", dst_img);
     // 出力画像を保存
-    imwrite("./img/out.jpg", dstImg);
+    imwrite("./img/out.jpg", dst_img);
 
     // キーボードが押されるまで処理を待つ
     waitKey(0);
