@@ -23,7 +23,7 @@ using namespace cv;
 #endif
 
 // DFTの結果である複素画像を表示用の強度画像に変換する。
-void create_fourier_magnitude_image_from_complex(const Mat& in, Mat& out)
+void convert_image_from_DFT(const Mat& in, Mat& out)
 {
 	/**
 	 * 複素画像の実部と虚部を2枚の画像に分離する。
@@ -92,7 +92,7 @@ void create_fourier_magnitude_image_from_complex(const Mat& in, Mat& out)
 }
 
 // 逆DFTで得られた画像を実画像に変換する。
-void create_inverse_fourier_image_from_complex(
+void convert_image_from_IDFT(
 	const Mat& in, const::Mat& origin, Mat& out)
 {
 	// 複素画像の実部と虚部を2枚の画像に分離する。
@@ -155,25 +155,27 @@ int main()
 	// フーリエ変換
 	dft(complex_image, complex_image);
 	// フーリエ変換の結果の可視化
-	Mat magnitude_image;
-	create_fourier_magnitude_image_from_complex(complex_image, magnitude_image);
+	Mat power_spectrum_image;
+	convert_image_from_DFT(complex_image, power_spectrum_image);
 
 	// 逆フーリエ変換
 	idft(complex_image, complex_image);
 	// 逆フーリエ変換の結果の可視化
 	Mat idft_image;
-	create_inverse_fourier_image_from_complex(complex_image, resize_img, idft_image);
+	convert_image_from_IDFT(complex_image, resize_img, idft_image);
+
+	Mat magnitude_image = power_spectrum_image.clone();
 
 	// 結果表示
 	imshow("original", resize_img);
-	imshow("dft", magnitude_image);
+	imshow("dft", power_spectrum_image);
 	imshow("idft", idft_image);
 
 	/**
 	 * 結果画像の保存.<br>
 	 * 表示画像は浮動小数表現で値域が[0,1]なので255を掛けたものを入力とする.
 	 */
-	imwrite("./img/dft.png", magnitude_image * 255);
+	imwrite("./img/dft.png", power_spectrum_image * 255);
 	imwrite("./img/idft.png", idft_image * 255);
 
 	waitKey(0);
