@@ -36,7 +36,7 @@ int main() {
     // 入力画像のアスペクト比
     double aspectRatio = (double)srcImg.rows / srcImg.cols;
     // 出力画像の横幅
-    int width = 800;
+    constexpr int width = 800;
     // アスペクト比を保持した高さ
     int height = aspectRatio * width;
 
