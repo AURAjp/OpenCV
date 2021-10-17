@@ -151,16 +151,20 @@ int main()
 	Mat idft_image;
 	convert_image_from_IDFT(complex_image, resize_img, idft_image);
 
-	// スペクトルを円形にトリミングするためのマスクを生成
+	// 黒の単色画像を生成
 	Mat mask_img = Mat::zeros(height, WIDTH, CV_8UC3);
+	// 画像の中心を指定
 	Point center(WIDTH / 2, height / 2);
-	circle(mask_img, center, height / 4, Scalar(255, 255, 255), -1);
-
+	// 塗りつぶす色を白に指定
+	Scalar white(255, 255, 255);
+	// スペクトルを円形にトリミングするための白色マスクを生成
+	circle(mask_img, center, height / 4, white, -1);
+	// フーリエ変換の結果をバックアップ
 	Mat magnitude_image = power_spectrum_image.clone();
-	
-	magnitude_image.convertTo(magnitude_image, CV_8U);
+	// 論理積計算のためビット深度を変換 CV32FC1 → CV8UC1
+	magnitude_image.convertTo(magnitude_image, CV_8U, 255.);
+	// 論理積計算のため色空間を変換 CV8UC1 → CV8UC3
 	cvtColor(magnitude_image, magnitude_image, CV_GRAY2BGR);
-	int e = magnitude_image.channels();
 
 	// トリミング後画像領域の確保
 	Mat masked_img;
@@ -177,8 +181,10 @@ int main()
 	 * 結果画像の保存.<br>
 	 * 表示画像は浮動小数表現で値域が[0,1]なので255を掛けたものを入力とする.
 	 */
+	imwrite("./img/original.png", resize_img);
 	imwrite("./img/dft.png", power_spectrum_image * 255);
 	imwrite("./img/idft.png", idft_image * 255);
+	imwrite("./img/masked.png", masked_img);
 
 	waitKey(0);
 
