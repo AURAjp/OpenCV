@@ -34,7 +34,7 @@ int main() {
     }
 
     // 入力画像のアスペクト比
-    double aspect_ratio = (double)src_img.rows / src_img.cols;
+    double aspect_ratio = (double) src_img.rows / src_img.cols;
     // 出力画像の横幅
     constexpr int width = 800;
     // アスペクト比を保持した高さ
