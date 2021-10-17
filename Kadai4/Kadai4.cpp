@@ -130,11 +130,11 @@ int main()
 	// リサイズ
 	resize(src_img, resize_img, resize_img.size());
 
-	//実部のみのimageと虚部を0で初期化したMatをplanes配列に入れる
+	//実部のみのimageと虚部を0で初期化したMatの配列
 	Mat planes[] = {
 		Mat_<float>(resize_img), Mat::zeros(resize_img.size(), CV_32F)
 	};
-	// フーリエ変換のために適切なサイズの複素画像を作る
+	// フーリエ変換出力後画像領域の確保
 	Mat complex_image;
 	//配列を合成
 	merge(planes, 2, complex_image);
@@ -151,12 +151,27 @@ int main()
 	Mat idft_image;
 	convert_image_from_IDFT(complex_image, resize_img, idft_image);
 
+	// スペクトルを円形にトリミングするためのマスクを生成
+	Mat mask_img = Mat::zeros(height, WIDTH, CV_8UC3);
+	Point center(WIDTH / 2, height / 2);
+	circle(mask_img, center, height / 4, Scalar(255, 255, 255), -1);
+
 	Mat magnitude_image = power_spectrum_image.clone();
+	
+	magnitude_image.convertTo(magnitude_image, CV_8U);
+	cvtColor(magnitude_image, magnitude_image, CV_GRAY2BGR);
+	int e = magnitude_image.channels();
+
+	// トリミング後画像領域の確保
+	Mat masked_img;
+	// 論理積を計算
+	bitwise_and(magnitude_image, mask_img, masked_img);
 
 	// 結果表示
 	imshow("original", resize_img);
 	imshow("dft", power_spectrum_image);
 	imshow("idft", idft_image);
+	imshow("circle", masked_img);
 
 	/**
 	 * 結果画像の保存.<br>
