@@ -51,13 +51,17 @@ int main() {
     Canny(resizeImg, cannyImg, 100., 300., 3, true);
     // エッジ検出画像の色を反転
     bitwise_not(cannyImg, cannyImg);
+    // 論理積を計算するためにCV_8UのC1からCV_8UのC3に変換
+    cvtColor(cannyImg, cannyImg, CV_GRAY2BGR);
 
-    //Bilateralフィルタ処理用画像領域確保
+    // Bilateralフィルタ処理用画像領域確保
     Mat bilateralImg;
+    // Bilateralフィルタ適用
     bilateralFilter(resizeImg, bilateralImg, 15, 30., 30., BORDER_DEFAULT);
 
-    // 論理積を計算
+    // 出力画像領域の確保
     Mat outImg;
+    // 論理積を計算
     bitwise_and(bilateralImg, cannyImg, outImg);
 
     // 出力画像を表示
@@ -70,6 +74,7 @@ int main() {
     imwrite("./img/bilateral.png", bilateralImg);
     imwrite("./img/out.png", outImg);
 
+    // キーボードが押されるまで処理を待つ
     waitKey(0);
 
     return 0;
