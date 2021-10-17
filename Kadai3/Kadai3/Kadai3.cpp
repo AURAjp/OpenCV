@@ -63,12 +63,12 @@ int main() {
     // 出力画像を表示
     imshow("Canny", cannyImg);
     imshow("Bilateral", bilateralImg);
-    imshow("outImg", outImg);
+    imshow("Out", outImg);
 
     // 出力画像を保存
-    imwrite("canny.png", cannyImg);
-    imwrite("bilateral.png", bilateralImg);
-    imwrite("out.png", outImg);
+    imwrite("./img/canny.png", cannyImg);
+    imwrite("./img/bilateral.png", bilateralImg);
+    imwrite("./img/out.png", outImg);
 
     waitKey(0);
 
