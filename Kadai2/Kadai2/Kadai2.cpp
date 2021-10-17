@@ -26,34 +26,34 @@ using namespace std;
 
 int main() {
 
-    // 画像ファイルを読み込む
-    Mat srcImg    = imread("./img/in.jpg");
-    // フィルタ用画像をグレースケールで読み込む
-    Mat filterImg = imread("./img/psf.png", 0);
-    // 読み込んだ画像のNULLチェック
-    if (srcImg.empty() || filterImg.empty()) {
-        return -1;
-    }
+	// 画像ファイルを読み込む
+	Mat src_img = imread("./img/in.jpg", IMREAD_COLOR);
+	// フィルタ用画像をグレースケールで読み込む
+	Mat filter_img = imread("./img/psf.png", IMREAD_GRAYSCALE);
+	// 読み込んだ画像のNULLチェック
+	if (src_img.empty() || filter_img.empty()) {
+		return -1;
+	}
 
-    // 画像をdouble型に変換
-    filterImg.convertTo(filterImg, CV_64F);
-    // 総和を求める
-    double sumImg = (double) sum(filterImg)[0];
-    // 総和で割る（総和が1 になる＝画像明るさ保存）
-    filterImg = filterImg * (1. / sumImg);
+	// 画像をdouble型に変換
+	filter_img.convertTo(filter_img, CV_64F);
+	// 総和を求める
+	double sum_img = (double)sum(filter_img)[0];
+	// 総和で割る（総和が1 になる＝画像明るさ保存）
+	filter_img = filter_img * (1. / sum_img);
 
-    // 出力用画像領域の確保
-    Mat outImg(srcImg.cols, srcImg.rows, srcImg.type());
-    // 入力画像にフィルターをかける
-    filter2D(srcImg, outImg, 8, filterImg);
+	// 出力用画像領域の確保
+	Mat out_img(src_img.cols, src_img.rows, src_img.type());
+	// 入力画像にフィルターをかける
+	filter2D(src_img, out_img, 8, filter_img);
 
-    // 出力画像を表示
-    imshow("img", outImg);
-    // 出力画像を保存
-    imwrite("./img/out.jpg", outImg);
+	// 出力画像を表示
+	imshow("img", out_img);
+	// 出力画像を保存
+	imwrite("./img/out.jpg", out_img);
 
-    // キーボードが押されるまで処理を待つ
-    waitKey(0);
+	// キーボードが押されるまで処理を待つ
+	waitKey(0);
 
-    return 0;
+	return 0;
 }
