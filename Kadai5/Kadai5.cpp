@@ -44,6 +44,14 @@ int main()
     // リサイズ
     resize(src_img, resize_img, resize_img.size());
 
+    Mat out_img;
+    medianBlur(resize_img, out_img, 5);
+
+    // 結果表示
+    imshow("out", out_img);
+
+    imwrite("./img/out.png", out_img);
+
     // キーボードが押されるまでwait
     waitKey(0);
 
