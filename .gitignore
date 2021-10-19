@@ -46,3 +46,6 @@ Kadai3/Kadai3/.vs/
 Kadai3/Kadai3/x64/
 Kadai4/.vs/
 Kadai4/x64/
+Kadai5/.vs/
+*.recipe
+Kadai5/Debug/
