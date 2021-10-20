@@ -786,46 +786,46 @@ namespace cv
     }
 
 
-    void my_medianBlur(const Mat& src0, Mat& dst, int ksize)
+    void my_medianBlur(const Mat& in, Mat& out, int filter_size)
     {
-        if (ksize <= 1)
+        if (filter_size <= 1)
         {
-            src0.copyTo(dst);
+            in.copyTo(out);
             return;
         }
 
-        CV_Assert(ksize % 2 == 1);
+        CV_Assert(filter_size % 2 == 1);
 
-        Size size = src0.size();
-        int cn = src0.channels();
-        bool useSortNet = ksize == 3 || (ksize == 5
+        Size size = in.size();
+        int cn = in.channels();
+        bool useSortNet = filter_size == 3 || (filter_size == 5
 #if !CV_SSE2
-            && src0.depth() > CV_8U
+            && in.depth() > CV_8U
 #endif
             );
 
-        dst.create(src0.size(), src0.type());
+        out.create(in.size(), in.type());
         Mat src;
         if (useSortNet)
         {
-            if (dst.data != src0.data)
-                src = src0;
+            if (out.data != in.data)
+                src = in;
             else
-                src0.copyTo(src);
+                in.copyTo(src);
         }
         else
-            cv::copyMakeBorder(src0, src, 0, 0, ksize / 2, ksize / 2, BORDER_REPLICATE);
+            cv::copyMakeBorder(in, src, 0, 0, filter_size / 2, filter_size / 2, BORDER_REPLICATE);
 
         if (useSortNet)
         {
             if (src.depth() == CV_8U)
-                medianBlur_SortNet<MinMax8u, MinMaxVec8u>(src, dst, ksize);
+                medianBlur_SortNet<MinMax8u, MinMaxVec8u>(src, out, filter_size);
             else if (src.depth() == CV_16U)
-                medianBlur_SortNet<MinMax16u, MinMaxVec16u>(src, dst, ksize);
+                medianBlur_SortNet<MinMax16u, MinMaxVec16u>(src, out, filter_size);
             else if (src.depth() == CV_16S)
-                medianBlur_SortNet<MinMax16s, MinMaxVec16s>(src, dst, ksize);
+                medianBlur_SortNet<MinMax16s, MinMaxVec16s>(src, out, filter_size);
             else if (src.depth() == CV_32F)
-                medianBlur_SortNet<MinMax32f, MinMaxVec32f>(src, dst, ksize);
+                medianBlur_SortNet<MinMax32f, MinMaxVec32f>(src, out, filter_size);
             else
                 CV_Error(CV_StsUnsupportedFormat, "");
             return;
@@ -834,10 +834,10 @@ namespace cv
         CV_Assert(src.depth() == CV_8U && (cn == 1 || cn == 3 || cn == 4));
 
         double img_size_mp = (double)(size.width * size.height) / (1 << 20);
-        if (ksize <= 3 + (img_size_mp < 1 ? 12 : img_size_mp < 4 ? 6 : 2) * (MEDIAN_HAVE_SIMD && checkHardwareSupport(CV_CPU_SSE2) ? 1 : 3))
-            medianBlur_8u_Om(src, dst, ksize);
+        if (filter_size <= 3 + (img_size_mp < 1 ? 12 : img_size_mp < 4 ? 6 : 2) * (MEDIAN_HAVE_SIMD && checkHardwareSupport(CV_CPU_SSE2) ? 1 : 3))
+            medianBlur_8u_Om(src, out, filter_size);
         else
-            medianBlur_8u_O1(src, dst, ksize);
+            medianBlur_8u_O1(src, out, filter_size);
     }
 }
 
