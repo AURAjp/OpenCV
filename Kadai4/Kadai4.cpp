@@ -23,6 +23,14 @@ using namespace cv;
 #endif
 
 // DFTの結果である複素画像を表示用の強度画像に変換する。
+void convert_and_swap_image_from_DFT(const Mat& in, Mat& out)
+{
+    convert_image_from_DFT(in, out);
+
+    swap_image(out, out);
+}
+
+// DFTの結果である複素画像を表示用の強度画像に変換する。
 void convert_image_from_DFT(const Mat& in, Mat& out)
 {
     /**
@@ -42,10 +50,32 @@ void convert_image_from_DFT(const Mat& in, Mat& out)
     out += Scalar::all(1);
     log(out, out);
 
+    // 濃淡を強調するために、画像最小値を0に、最大値を1にするように正規化する。
+    normalize(out, out, 0, 1, CV_MINMAX);
+}
+
+// 逆DFTで得られた画像を実画像に変換する。
+void convert_image_from_IDFT(
+    const Mat& in, const::Mat& origin, Mat& out)
+{
+    // 複素画像の実部と虚部を2枚の画像に分離する。
+    Mat splitted_image[2];
+    split(in, splitted_image);
+
+    /**
+     * 実部について正規化を行う。
+     * 入力画像のサイズはDFT用に拡大されているので、原画像の同サイズにROIを設定して
+     * 縮小する。
+     */
+    splitted_image[0](Rect(0, 0, origin.cols, origin.rows)).copyTo(out);
+    normalize(out, out, 0, 1, CV_MINMAX);
+}
+
+void swap_image(const Mat& in, Mat& out) {
     /**
      * 以下に続く入れ替えのために、画像の両辺のサイズを偶数にしておく
      */
-    out = out(Rect(0, 0, out.cols & -2, out.rows & -2));
+    out = in(Rect(0, 0, in.cols & -2, in.rows & -2));
 
 
     /**
@@ -68,14 +98,10 @@ void convert_image_from_DFT(const Mat& in, Mat& out)
 
     Mat tmp;
 
-    Mat q0(out,
-        Rect(0, 0, half_width, half_height));
-    Mat q1(out,
-        Rect(half_width, 0, half_width, half_height));
-    Mat q2(out,
-        Rect(0, half_height, half_width, half_height));
-    Mat q3(out,
-        Rect(half_width, half_height, half_width, half_height));
+    Mat q0(out, Rect(0, 0, half_width, half_height));
+    Mat q1(out, Rect(half_width, 0, half_width, half_height));
+    Mat q2(out, Rect(0, half_height, half_width, half_height));
+    Mat q3(out, Rect(half_width, half_height, half_width, half_height));
 
     q0.copyTo(tmp);
     q3.copyTo(q0);
@@ -83,26 +109,6 @@ void convert_image_from_DFT(const Mat& in, Mat& out)
     q1.copyTo(tmp);
     q2.copyTo(q1);
     tmp.copyTo(q2);
-
-    // 濃淡を強調するために、画像最小値を0に、最大値を1にするように正規化する。
-    normalize(out, out, 0, 1, CV_MINMAX);
-}
-
-// 逆DFTで得られた画像を実画像に変換する。
-void convert_image_from_IDFT(
-    const Mat& in, const::Mat& origin, Mat& out)
-{
-    // 複素画像の実部と虚部を2枚の画像に分離する。
-    Mat splitted_image[2];
-    split(in, splitted_image);
-
-    /**
-     * 実部について正規化を行う。
-     * 入力画像のサイズはDFT用に拡大されているので、原画像の同サイズにROIを設定して
-     * 縮小する。
-     */
-    splitted_image[0](Rect(0, 0, origin.cols, origin.rows)).copyTo(out);
-    normalize(out, out, 0, 1, CV_MINMAX);
 }
 
 int main()
@@ -138,9 +144,11 @@ int main()
 
     // フーリエ変換
     dft(complex_image, complex_image);
+    int a = complex_image.type(); // CV32FC2
     // フーリエ変換の結果の可視化
     Mat power_spectrum_image;
     convert_image_from_DFT(complex_image, power_spectrum_image);
+    int b = power_spectrum_image.type();  // CV32FC1
 
     // 逆フーリエ変換
     idft(complex_image, complex_image);
@@ -167,6 +175,15 @@ int main()
     Mat masked_img;
     // 論理積を計算
     bitwise_and(magnitude_image, mask_img, masked_img);
+
+    //実部のみのimageと虚部を0で初期化したMatの配列
+    Mat masked_planes[] = {
+        Mat_<float>(masked_img), Mat::zeros(masked_img.size(), CV_32F)
+    };
+    // フーリエ変換出力後画像領域の確保
+    Mat masked_complex_image;
+    //配列を合成
+    merge(masked_planes, 2, masked_complex_image);
 
     // 結果表示
     imshow("original", resize_img);
