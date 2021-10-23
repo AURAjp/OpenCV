@@ -33,11 +33,11 @@ int main()
     }
 
     // 入力画像のアスペクト比
-    const double aspect_ratio = (double)src_img.rows / src_img.cols;
+    const double aspect_ratio = (double)src_img.cols / src_img.rows;
     // 出力画像の横幅
     constexpr int WIDTH = 800;
     // アスペクト比を保持した高さ
-    const int height = round(aspect_ratio * WIDTH);
+    const int height = round(WIDTH / aspect_ratio);
 
     // リサイズ用画像領域の確保
     const Mat resize_img(height, WIDTH, src_img.type());
