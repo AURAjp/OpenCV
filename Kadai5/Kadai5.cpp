@@ -35,7 +35,7 @@ void my_medianBlur(const Mat& in, Mat& out, int filter_size)
     // フィルタサイズが1以下ならば入力画像と同じ画像を返す
     if (filter_size <= 1)
     {
-        in.copyTo(out);
+        out = in.clone();
         return;
     }
     // フィルタサイズが奇数か、入力画像がCV_8UC1かどうかチェック
