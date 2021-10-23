@@ -22,6 +22,25 @@ using namespace cv;
 #pragma comment(lib, "opencv_calib3d2413.lib")
 #endif
 
+/**
+* 自作のメディアンフィルタを行う関数
+* 
+* @param in 入力画像
+* @param out 出力画像
+* @param filter_size フィルタサイズ
+*/
+void my_medianBlur(const Mat& in, Mat& out, int filter_size)
+{
+    // フィルタサイズが1以下ならば入力画像と同じ画像を返す
+    if (filter_size <= 1)
+    {
+        in.copyTo(out);
+        return;
+    }
+    // フィルタサイズが奇数かどうかチェック
+    CV_Assert(filter_size % 2 == 1);
+}
+
 int main()
 {
     // 画像の読み込み
