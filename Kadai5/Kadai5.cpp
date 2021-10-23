@@ -40,21 +40,32 @@ int main()
     const int height = round(WIDTH / aspect_ratio);
 
     // リサイズ用画像領域の確保
-    const Mat resize_img(height, WIDTH, src_img.type());
+    Mat resize_img(height, WIDTH, src_img.type());
     // リサイズ
     resize(src_img, resize_img, resize_img.size());
 
-    Mat out05_img;
-    medianBlur(resize_img, out05_img,  5);
-    Mat out11_img;
-    medianBlur(resize_img, out11_img, 11);
-    Mat out21_img;
-    medianBlur(resize_img, out21_img, 21);
+    // 境界処理用画像領域の確保
+    constexpr int EXPIXEL = 100;
+    Mat border_extend_img;
+    copyMakeBorder(resize_img, border_extend_img, EXPIXEL, EXPIXEL, EXPIXEL, EXPIXEL, BORDER_REFLECT_101);
+
+    // Median Blur
+    Mat extend_out05_img;
+    medianBlur(border_extend_img, extend_out05_img,  5);
+    Mat extend_out11_img;
+    medianBlur(border_extend_img, extend_out11_img, 11);
+    Mat extend_out21_img;
+    medianBlur(border_extend_img, extend_out21_img, 21);
+
+    // 境界処理用に拡張した部分をトリミング
+    const Mat out05_img(extend_out05_img, Rect(EXPIXEL, EXPIXEL, WIDTH, height));
+    const Mat out11_img(extend_out11_img, Rect(EXPIXEL, EXPIXEL, WIDTH, height));
+    const Mat out21_img(extend_out21_img, Rect(EXPIXEL, EXPIXEL, WIDTH, height));
 
     // 結果表示
-    imshow("out", out05_img);
-    imshow("out", out11_img);
-    imshow("out", out21_img);
+    imshow("out05", out05_img);
+    imshow("out11", out11_img);
+    imshow("out21", out21_img);
 
     imwrite("./img/out5.png" , out05_img);
     imwrite("./img/out11.png", out11_img);
