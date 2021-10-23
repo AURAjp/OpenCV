@@ -1,4 +1,5 @@
 ﻿#include <opencv2/opencv.hpp>
+#include <vector>
 
 using namespace cv;
 
@@ -40,33 +41,40 @@ void my_medianBlur(const Mat& in, Mat& out, int filter_size)
     // フィルタサイズが奇数かどうかチェック
     CV_Assert(filter_size % 2 == 1);
 
+    // 処理範囲を特定する
     const int width = in.cols;
     const int height = in.rows;
-
+    // フィルタが影響を与えるのは処理対象ピクセルデータから前後半分のエリア
+    const int affect_area = filter_size / 2;
     // 周辺領域のピクセルを格納する配列
-    // TODO: 暫定で3*3フィルタ
-    int pixel_around[9];
+    vector<int> pixel_around(pow(filter_size, 2), 0);
+    // 出力用画像領域の確保
+    out = Mat(height, width, CV_8UC1);
 
     /**
     * 画像データの(1, 1) -> (width - 1, height - 1) までループ.<br>
     * (0, 0)や(width, height)などの境界値は最終的にトリミングするため無視する.
     */
-    for (int y = 1; y < height - 1; y++)
+    for (int y = affect_area; y < height - affect_area; y++)
     {
-        for (int x = 1; x < width - 1; x++)
+        for (int x = affect_area; x < width - affect_area; x++)
         {
             int count = 0;
-            // (x - 1, y - 1) -> (x + 1, y + 1)の範囲にフィルターをかける
-            for (int py = y - 1; py <= y + 1; py++)
+            // (x - affect_area, y - affect_area) -> (x + affect_area, y + affect_area)の範囲にフィルターをかける
+            for (int py = y - affect_area; py <= y + affect_area; py++)
             {
-                for (int px = x - 1; px <= x + 1; px++)
+                for (int px = x - affect_area; px <= x + affect_area; px++)
                 {
                     // 処理対象ピクセルデータの周辺領域のピクセルデータを保存
                     pixel_around[count] = in.at<unsigned char>(py, px);
                     count++;
                 }
             }
-            // 保存したピクセルデータをソートする
+            // 保存したピクセルデータをソートして中央値を取得
+            sort(begin(pixel_around), end(pixel_around));
+            int median = pixel_around[pixel_around.size() / 2 + 1];
+            // 取得した中央値を処理対象ピクセルに上書きする
+            out.at<unsigned char>(y, x) = median;
         }
     }
 }
@@ -115,10 +123,10 @@ int main()
     medianBlur(resize_img, out03_img, 3);
     Mat extend_out03_img;
     my_medianBlur(border_extend_img, extend_out03_img, 3);
-    ///const Mat my_out03_img(extend_out03_img, Rect(EXPIXEL, EXPIXEL, WIDTH, height));
+    const Mat my_out03_img(extend_out03_img, Rect(EXPIXEL, EXPIXEL, WIDTH, height));
 
     imshow("out03"  , out03_img);
-    //imshow("myout03", my_out03_img);
+    imshow("myout03", my_out03_img);
 
     // 結果表示
     //imshow("out05", out05_img);
