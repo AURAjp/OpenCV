@@ -86,7 +86,7 @@ void my_medianBlur(const Mat& in, Mat& out, int filter_size)
         }
     }
     // 境界処理用に拡張した部分をトリミング
-    out = Mat(dst_img, Rect(affect_area, affect_area, width - affect_area, height - affect_area));
+    out = Mat(dst_img, Rect(affect_area, affect_area, width - affect_area * 2, height - affect_area * 2));
 }
 
 int main()
