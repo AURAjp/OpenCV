@@ -23,6 +23,10 @@ OpenCV
 - IDFT
 - ローパス
 
+## 課題5
+
+- MedianFilterを自作
+
 # 環境構築
 
 ## 動作環境
