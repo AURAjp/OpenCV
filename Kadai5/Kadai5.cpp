@@ -122,7 +122,7 @@ int main()
     // 結果表示
     imshow("out05", out05_img);
     imshow("out11", out11_img);
-    imshow("out05", out21_img);
+    imshow("out21", out21_img);
 
     imwrite("./img/out5.png" , out05_img);
     imwrite("./img/out11.png", out11_img);
