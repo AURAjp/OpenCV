@@ -42,7 +42,7 @@ void my_medianBlur(const Mat& in, Mat& out, int filter_size)
     CV_Assert(filter_size % 2 == 1 && in.type() == 0);
 
     // フィルタが影響を与えるのは処理対象ピクセルデータから前後半分のエリア
-    const int affect_area = filter_size / 2;
+    const int affect_area = (filter_size - 1) / 2;
 
     // 境界処理用に画像の上下左右にフィルタが影響を与えるピクセル分を反転させて追加する
     Mat border_extend_img;
