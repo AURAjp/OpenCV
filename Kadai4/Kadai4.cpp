@@ -120,7 +120,7 @@ void my_resize(const Mat& in, Mat& out)
     // 出力画像の横幅
     constexpr int WIDTH = 800;
     // アスペクト比を保持した高さ
-    const int height = WIDTH / aspect_ratio;
+    const int height = round(WIDTH / aspect_ratio);
     // リサイズ用画像領域の確保
     Mat resize_img(height, WIDTH, in.type());
     // リサイズ
