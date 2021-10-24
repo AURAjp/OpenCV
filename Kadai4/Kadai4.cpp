@@ -89,8 +89,7 @@ void convert_image_from_DFT(const Mat& in, Mat& out)
 }
 
 // 逆DFTで得られた画像を実画像に変換する。
-void convert_image_from_IDFT(
-    const Mat& in, const::Mat& origin, Mat& out)
+void convert_image_from_IDFT(const Mat& in, const::Mat& origin, Mat& out)
 {
     // 複素画像の実部と虚部を2枚の画像に分離する。
     Mat splitted_image[2];
@@ -105,36 +104,47 @@ void convert_image_from_IDFT(
     normalize(out, out, 0, 1, CV_MINMAX);
 }
 
+void convert_CV_32FC2(const Mat& in, Mat& out)
+{
+    // 実部のみのimageと虚部を0で初期化したMatの配列
+    Mat RealIamginary[] = {
+        Mat_<float>(in), Mat::zeros(in.size(), CV_32F)
+    };
+    // 配列を合成
+    merge(RealIamginary, 2, out);
+}
+
+void my_resize(const Mat& in, Mat& out)
+{
+    // 入力画像のアスペクト比
+    const double aspect_ratio = (double)in.cols / in.rows;
+    // 出力画像の横幅
+    constexpr int WIDTH = 800;
+    // アスペクト比を保持した高さ
+    const int height = WIDTH / aspect_ratio;
+    // リサイズ用画像領域の確保
+    Mat resize_img(height, WIDTH, in.type());
+    // リサイズ
+    resize(in, resize_img, resize_img.size());
+    resize_img.copyTo(out);
+}
+
 int main()
 {
     // 画像の読み込み
-    auto src_img = imread("./img/in.jpg", IMREAD_GRAYSCALE);
+    Mat src_img = imread("./img/in.jpg", IMREAD_GRAYSCALE);
     // 読み込んだ画像のNULLチェック
     if (src_img.empty())
     {
         return -1;
     }
 
-    // 入力画像のアスペクト比
-    auto aspect_ratio = (double)src_img.rows / src_img.cols;
-    // 出力画像の横幅
-    constexpr auto WIDTH = 800;
-    // アスペクト比を保持した高さ
-    int height = aspect_ratio * WIDTH;
+    Mat resize_img;
+    my_resize(src_img, resize_img);
 
-    // リサイズ用画像領域の確保
-    Mat resize_img(height, WIDTH, src_img.type());
-    // リサイズ
-    resize(src_img, resize_img, resize_img.size());
-
-    //実部のみのimageと虚部を0で初期化したMatの配列
-    Mat planes[] = {
-        Mat_<float>(resize_img), Mat::zeros(resize_img.size(), CV_32F)
-    };
     // フーリエ変換出力後画像領域の確保
     Mat complex_image;
-    //配列を合成
-    merge(planes, 2, complex_image);
+    convert_CV_32FC2(resize_img, complex_image);
 
     // フーリエ変換
     dft(complex_image, complex_image);
@@ -149,13 +159,13 @@ int main()
     convert_image_from_IDFT(complex_image, resize_img, idft_image);
 
     // 黒の単色画像を生成
-    Mat mask_img = Mat::zeros(height, WIDTH, CV_8UC3);
+    Mat mask_img = Mat::zeros(resize_img.rows, resize_img.cols, CV_8UC3);
     // 画像の中心を指定
-    Point center(WIDTH / 2, height / 2);
+    Point center(resize_img.cols / 2, resize_img.rows / 2);
     // 塗りつぶす色を白に指定
     Scalar white(255, 255, 255);
     // スペクトルを円形にトリミングするための白色マスクを生成
-    circle(mask_img, center, height / 4, white, -1);
+    circle(mask_img, center, resize_img.rows / 4, white, -1);
     // フーリエ変換の結果をバックアップ
     Mat magnitude_image = power_spectrum_image.clone();
     // 論理積計算のためビット深度を変換 CV32FC1 → CV8UC1
