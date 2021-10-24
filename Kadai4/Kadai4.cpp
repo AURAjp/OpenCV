@@ -139,10 +139,11 @@ int main()
         return -1;
     }
 
+    // 800 * ? のサイズにアスペクト比を保持したままリサイズ
     Mat resize_img;
     my_resize(src_img, resize_img);
 
-    // フーリエ変換出力後画像領域の確保
+    // フーリエ変換用画像領域の確保
     Mat complex_image;
     convert_CV_32FC2(resize_img, complex_image);
 
