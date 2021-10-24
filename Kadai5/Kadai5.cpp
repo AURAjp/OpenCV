@@ -24,12 +24,12 @@ using namespace cv;
 #endif
 
 /**
-* 自作のメディアンフィルタを行う関数
-* 
-* @param in 入力画像
-* @param out 出力画像
-* @param filter_size フィルタサイズ
-*/
+ * 自作のメディアンフィルタを行う関数.
+ * 
+ * @param in 入力画像
+ * @param out 出力画像
+ * @param filter_size フィルタサイズ
+ */
 void my_medianBlur(const Mat& in, Mat& out, const int filter_size)
 {
     // フィルタサイズが1以下ならば入力画像と同じ画像を返す
@@ -41,14 +41,14 @@ void my_medianBlur(const Mat& in, Mat& out, const int filter_size)
     // フィルタサイズが奇数か、入力画像がCV_8UC1かどうかチェック
     CV_Assert(filter_size % 2 == 1 && in.type() == 0);
 
-    // フィルタが影響を与えるのは処理対象ピクセルデータから前後半分のエリア
+    //! フィルタが影響を与えるのは処理対象ピクセルデータから前後半分のエリア
     const int affect_area = (filter_size - 1) / 2;
 
     // 境界処理用に画像の上下左右にフィルタが影響を与えるピクセル分を反転させて追加する
     Mat border_extend_img;
     copyMakeBorder(in, border_extend_img, affect_area, affect_area, affect_area, affect_area, BORDER_REFLECT_101);
 
-    // 処理範囲を特定する
+    //! 処理範囲を特定する
     const int width = border_extend_img.cols;
     const int height = border_extend_img.rows;
 
@@ -58,15 +58,15 @@ void my_medianBlur(const Mat& in, Mat& out, const int filter_size)
     Mat dst_img = Mat(height, width, CV_8UC1);
 
     /**
-    * 処理対象ピクセルデータ(x, y)について、
-    * (affect_area, affect_area) -> (width - affect_area, height - affect_area) までループ.<br>
-    * (0, 0)や(width, height)などの境界値は最終的にトリミングするため無視する.
-    */
+     * 処理対象ピクセルデータ(x, y)について、
+     * (affect_area, affect_area) -> (width - affect_area, height - affect_area) までループ.<br>
+     * (0, 0)や(width, height)などの境界値は最終的にトリミングするため無視する.
+     */
     for (int y = affect_area; y < height - affect_area; y++)
     {
         for (int x = affect_area; x < width - affect_area; x++)
         {
-            // 配列の添字
+            //! 配列の添字
             int index = 0;
             // (x - affect_area, y - affect_area) -> (x + affect_area, y + affect_area)の範囲にフィルターをかける
             for (int py = y - affect_area; py <= y + affect_area; py++)
@@ -80,6 +80,7 @@ void my_medianBlur(const Mat& in, Mat& out, const int filter_size)
             }
             // 保存したピクセルデータをソートして中央値を取得
             sort(begin(pixel_around), end(pixel_around));
+            //! 中央値
             int median = pixel_around[pixel_around.size() / 2 + 1];
             // 取得した中央値を処理対象ピクセルに上書きする
             dst_img.at<unsigned char>(y, x) = median;
@@ -89,13 +90,19 @@ void my_medianBlur(const Mat& in, Mat& out, const int filter_size)
     out = Mat(dst_img, Rect(affect_area, affect_area, width - affect_area * 2, height - affect_area * 2));
 }
 
+/**
+ *  800 x ? のサイズへアスペクト比を保ったままリサイズする.
+ *
+ * @param in 入力画像
+ * @param out 出力画像
+ */
 void my_resize(const Mat& in, Mat& out)
 {
-    // 入力画像のアスペクト比
+    //! 入力画像のアスペクト比
     const double aspect_ratio = (double)in.cols / in.rows;
-    // 出力画像の横幅
+    //! 出力画像の横幅
     constexpr int WIDTH = 800;
-    // アスペクト比を保持した高さ
+    //! アスペクト比を保持した高さ
     const int height = round(WIDTH / aspect_ratio);
 
     // リサイズ用画像領域の確保
@@ -107,15 +114,16 @@ void my_resize(const Mat& in, Mat& out)
 
 int main()
 {
-    // 画像の読み込み
+    //! 画像の読み込み
     const Mat src_img = imread("./img/in.jpg", IMREAD_GRAYSCALE);
     // 読み込んだ画像のNULLチェック
     if (src_img.empty()) {return -1;}
 
+    // 読み込んだ画像のリサイズ
     Mat resize_img;
     my_resize(src_img, resize_img);
 
-    // Median Blur
+    // 自作のMedian Blurを適用
     Mat out05_img;
     my_medianBlur(resize_img, out05_img,  5);
     Mat out11_img;
