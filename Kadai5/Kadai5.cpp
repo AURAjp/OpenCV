@@ -30,7 +30,7 @@ using namespace cv;
 * @param out 出力画像
 * @param filter_size フィルタサイズ
 */
-void my_medianBlur(const Mat& in, Mat& out, int filter_size)
+void my_medianBlur(const Mat& in, Mat& out, const int filter_size)
 {
     // フィルタサイズが1以下ならば入力画像と同じ画像を返す
     if (filter_size <= 1)
@@ -89,27 +89,31 @@ void my_medianBlur(const Mat& in, Mat& out, int filter_size)
     out = Mat(dst_img, Rect(affect_area, affect_area, width - affect_area * 2, height - affect_area * 2));
 }
 
-int main()
+void my_resize(const Mat& in, Mat& out)
 {
-    // 画像の読み込み
-    const Mat src_img = imread("./img/in.jpg", IMREAD_GRAYSCALE);
-    // 読み込んだ画像のNULLチェック
-    if (src_img.empty())
-    {
-        return -1;
-    }
-
     // 入力画像のアスペクト比
-    const double aspect_ratio = (double)src_img.cols / src_img.rows;
+    const double aspect_ratio = (double)in.cols / in.rows;
     // 出力画像の横幅
     constexpr int WIDTH = 800;
     // アスペクト比を保持した高さ
     const int height = round(WIDTH / aspect_ratio);
 
     // リサイズ用画像領域の確保
-    Mat resize_img(height, WIDTH, src_img.type());
+    Mat resize_img(height, WIDTH, in.type());
     // リサイズ
-    resize(src_img, resize_img, resize_img.size());
+    resize(in, resize_img, resize_img.size());
+    resize_img.copyTo(out);
+}
+
+int main()
+{
+    // 画像の読み込み
+    const Mat src_img = imread("./img/in.jpg", IMREAD_GRAYSCALE);
+    // 読み込んだ画像のNULLチェック
+    if (src_img.empty()) {return -1;}
+
+    Mat resize_img;
+    my_resize(src_img, resize_img);
 
     // Median Blur
     Mat out05_img;
