@@ -137,8 +137,8 @@ void low_pass_filter(Mat& in)
         {
             if (i > 100 && j > 100)
             {
-                in.at<cv::Vec2f>(i, j)[0] = 0;
-                in.at<cv::Vec2f>(i, j)[1] = 0;
+                in.at<Vec2f>(i, j)[0] = 0;
+                in.at<Vec2f>(i, j)[1] = 0;
             }
         }
     }
@@ -177,13 +177,14 @@ int main()
     Mat idft_image;
     convert_image_from_IDFT(complex_image, resize_img, idft_image);
 
+    // ローパスフィルタ
     low_pass_filter(dft_image);
     // ローパスフィルタの結果の可視化
     Mat low_pass_power_spectrum_image;
     convert_image_from_DFT(dft_image, low_pass_power_spectrum_image);
-    // 逆フーリエ変換
+    // ローパスフィルタをかけた画像を逆フーリエ変換
     idft(dft_image, dft_image);
-    // 逆フーリエ変換の結果の可視化
+    // ローパスフィルタをかけた画像の逆フーリエ変換の結果の可視化
     Mat low_pass_image;
     convert_image_from_IDFT(dft_image, resize_img, low_pass_image);
 
@@ -191,8 +192,8 @@ int main()
     imshow("original", resize_img);
     imshow("dft", power_spectrum_image);
     imshow("idft", idft_image);
-    imshow("low_pass_image", low_pass_image);
     imshow("low_pass_power_spectrum_image", low_pass_power_spectrum_image);
+    imshow("low_pass_image", low_pass_image);
 
     /**
      * 結果画像の保存.<br>
@@ -201,8 +202,8 @@ int main()
     imwrite("./img/original.png", resize_img);
     imwrite("./img/dft.png", power_spectrum_image * 255);
     imwrite("./img/idft.png", idft_image * 255);
-    imwrite("./img/low_pass_image.png", low_pass_image * 255);
     imwrite("./img/low_pass_power_spectrum_image.png", low_pass_power_spectrum_image * 255);
+    imwrite("./img/low_pass_image.png", low_pass_image * 255);
 
     waitKey(0);
 
