@@ -188,23 +188,23 @@ int main()
     convert_image_from_IDFT(dft_image, resize_img, low_pass_image);
 
     // 結果表示
-    cv::imshow("original", resize_img);
-    cv::imshow("dft", power_spectrum_image);
-    cv::imshow("idft", idft_image);
-    cv::imshow("low_pass_image", low_pass_image);
-    cv::imshow("low_pass_power_spectrum_image", low_pass_power_spectrum_image);
+    imshow("original", resize_img);
+    imshow("dft", power_spectrum_image);
+    imshow("idft", idft_image);
+    imshow("low_pass_image", low_pass_image);
+    imshow("low_pass_power_spectrum_image", low_pass_power_spectrum_image);
 
     /**
      * 結果画像の保存.<br>
      * 表示画像は浮動小数表現で値域が[0,1]なので255を掛けたものを入力とする.
      */
-    cv::imwrite("./img/original.png", resize_img);
-    cv::imwrite("./img/dft.png", power_spectrum_image * 255);
-    cv::imwrite("./img/idft.png", idft_image * 255);
-    cv::imwrite("./img/low_pass_image.png", low_pass_image * 255);
-    cv::imwrite("./img/low_pass_power_spectrum_image.png", low_pass_power_spectrum_image * 255);
+    imwrite("./img/original.png", resize_img);
+    imwrite("./img/dft.png", power_spectrum_image * 255);
+    imwrite("./img/idft.png", idft_image * 255);
+    imwrite("./img/low_pass_image.png", low_pass_image * 255);
+    imwrite("./img/low_pass_power_spectrum_image.png", low_pass_power_spectrum_image * 255);
 
-    cv::waitKey(0);
+    waitKey(0);
 
     return 0;
 }
