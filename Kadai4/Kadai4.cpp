@@ -22,6 +22,45 @@ using namespace cv;
 #pragma comment(lib, "opencv_calib3d2413.lib")
 #endif
 
+void swap_image(Mat& in)
+{
+    /**
+    * 以下に続く入れ替えのために、画像の両辺のサイズを偶数にしておく
+    */
+    in = in(Rect(0, 0, in.cols & -2, in.rows & -2));
+    /**
+     * dft()で得られる画像を一般的な二次元DFTの表示様式にする。
+     *
+     * 具体的には以下のように画像の各四半分を入れ替える。
+     *
+     * +----+----+    +----+----+
+     * |    |    |    |    |    |
+     * | q0 | q1 |    | q3 | q2 |
+     * |    |    |    |    |    |
+     * +----+----+ -> +----+----+
+     * |    |    |    |    |    |
+     * | q2 | q3 |    | q1 | q0 |
+     * |    |    |    |    |    |
+     * +----+----+    +----+----+
+     */
+    const int half_width = in.cols / 2;
+    const int half_height = in.rows / 2;
+
+    Mat tmp;
+
+    Mat q0(in, Rect(0, 0, half_width, half_height));
+    Mat q1(in, Rect(half_width, 0, half_width, half_height));
+    Mat q2(in, Rect(0, half_height, half_width, half_height));
+    Mat q3(in, Rect(half_width, half_height, half_width, half_height));
+
+    q0.copyTo(tmp);
+    q3.copyTo(q0);
+    tmp.copyTo(q3);
+    q1.copyTo(tmp);
+    q2.copyTo(q1);
+    tmp.copyTo(q2);
+}
+
 // DFTの結果である複素画像を表示用の強度画像に変換する。
 void convert_image_from_DFT(const Mat& in, Mat& out)
 {
@@ -42,47 +81,7 @@ void convert_image_from_DFT(const Mat& in, Mat& out)
     out += Scalar::all(1);
     log(out, out);
 
-    /**
-     * 以下に続く入れ替えのために、画像の両辺のサイズを偶数にしておく
-     */
-    out = out(Rect(0, 0, out.cols & -2, out.rows & -2));
-
-
-    /**
-     * dft()で得られる画像を一般的な二次元DFTの表示様式にする。
-     *
-     * 具体的には以下のように画像の各四半分を入れ替える。
-     *
-     * +----+----+    +----+----+
-     * |    |    |    |    |    |
-     * | q0 | q1 |    | q3 | q2 |
-     * |    |    |    |    |    |
-     * +----+----+ -> +----+----+
-     * |    |    |    |    |    |
-     * | q2 | q3 |    | q1 | q0 |
-     * |    |    |    |    |    |
-     * +----+----+    +----+----+
-     */
-    const int half_width = out.cols / 2;
-    const int half_height = out.rows / 2;
-
-    Mat tmp;
-
-    Mat q0(out,
-        Rect(0, 0, half_width, half_height));
-    Mat q1(out,
-        Rect(half_width, 0, half_width, half_height));
-    Mat q2(out,
-        Rect(0, half_height, half_width, half_height));
-    Mat q3(out,
-        Rect(half_width, half_height, half_width, half_height));
-
-    q0.copyTo(tmp);
-    q3.copyTo(q0);
-    tmp.copyTo(q3);
-    q1.copyTo(tmp);
-    q2.copyTo(q1);
-    tmp.copyTo(q2);
+    swap_image(out);
 
     // 濃淡を強調するために、画像最小値を0に、最大値を1にするように正規化する。
     normalize(out, out, 0, 1, CV_MINMAX);
