@@ -34,6 +34,10 @@ OpenCV
 - OpenCV 2.4.13
 - C++ 20
 
+## 開発環境
+
+- Visual Studio 2019
+
 ## ビルド
 
 ### 1. Pathを通す
