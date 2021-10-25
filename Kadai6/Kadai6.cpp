@@ -69,16 +69,51 @@ int main()
     Mat Cr = planes[1].clone();
     Mat Cb = planes[2].clone();
 
-    // 結果表示
-    imshow("ycrcb_image", YCrCb_image);
-    imshow("y_image", Y);
-    imshow("cr_image", Cr);
-    imshow("cb_image", Cb);
+    // CrとCbを 30 x 30 にリサイズ
+    resize(planes[1], planes[1],
+        Size(), 30. / planes[1].cols, 30. / planes[1].rows);
+    resize(planes[2], planes[2],
+        Size(), 30. / planes[2].cols, 30. / planes[2].rows);
 
+    // 出力用にクローンをとっておく
+    Mat Cr2 = planes[1].clone();
+    Mat Cb2 = planes[2].clone();
+
+    // CrとCbを元の大きさに再リサイズ
+    resize(planes[1], planes[1],
+        Size(), resize_img.cols / 30., resize_img.rows / 30.);
+    resize(planes[2], planes[2],
+        Size(), resize_img.cols / 30., resize_img.rows / 30.);
+
+    // 出力用にクローンをとっておく
+    Mat Cr3 = planes[1].clone();
+    Mat Cb3 = planes[2].clone();
+
+    Mat out;
+    merge(planes, out);
+
+    // 結果表示
+    imshow("resize", resize_img);
+    imshow("YCrCb", YCrCb_image);
+    imshow("Y", Y);
+    imshow("Cr", Cr);
+    imshow("Cb", Cb);
+    imshow("Cr2", Cr2);
+    imshow("Cb2", Cb2);
+    imshow("Cr3", Cr3);
+    imshow("Cb3", Cb3);
+    imshow("out", out);
+
+    imwrite("../img/kadai6/resize_img.png", resize_img);
     imwrite("../img/kadai6/YCbCr.png", YCrCb_image);
     imwrite("../img/kadai6/Y.png", Y);
     imwrite("../img/kadai6/Cr.png", Cr);
     imwrite("../img/kadai6/Cb.png", Cb);
+    imwrite("../img/kadai6/Cr2.png", Cr2);
+    imwrite("../img/kadai6/Cb2.png", Cb2);
+    imwrite("../img/kadai6/Cr3.png", Cr3);
+    imwrite("../img/kadai6/Cb3.png", Cb3);
+    imwrite("../img/kadai6/out.png", out);
 
     // キーボードが押されるまでwait
     waitKey(0);
