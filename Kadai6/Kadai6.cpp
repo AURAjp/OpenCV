@@ -47,7 +47,7 @@ void my_resize(const Mat& in, Mat& out)
 int main()
 {
     //! 画像の読み込み
-    const Mat src_img = imread("./img/in.jpg", IMREAD_GRAYSCALE);
+    const Mat src_img = imread("../img/in.jpg", IMREAD_COLOR);
     // 読み込んだ画像のNULLチェック
     if (src_img.empty()) { return -1; }
 
@@ -57,12 +57,12 @@ int main()
 
     // BGRからYCrCbへ変換
     Mat ycrcb_image;
-    cvtColor(resize_img, ycrcb_image, COLOR_BGR2YCrCb);
+    cvtColor(resize_img, ycrcb_image, CV_BGR2YCrCb);
 
     // 結果表示
     imshow("ycrcb_image", ycrcb_image);
 
-    imwrite("./img/ycrcb_image.png", ycrcb_image);
+    imwrite("../img/kadai6/ycrcb_image.png", ycrcb_image);
 
     // キーボードが押されるまでwait
     waitKey(0);
