@@ -108,7 +108,7 @@ int main()
     imshow("out", out);
 
     imwrite("../img/kadai6/resize_img.png", resize_img);
-    imwrite("../img/kadai6/YCbCr.png", YCrCb_image);
+    imwrite("../img/kadai6/YCrCb.png", YCrCb_image);
     imwrite("../img/kadai6/Y.png", Y);
     imwrite("../img/kadai6/Cr.png", Cr);
     imwrite("../img/kadai6/Cb.png", Cb);
