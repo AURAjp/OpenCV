@@ -57,23 +57,28 @@ int main()
     my_resize(src_img, resize_img);
 
     // BGRからYCrCbへ変換
-    Mat ycrcb_image;
-    cvtColor(resize_img, ycrcb_image, CV_BGR2YCrCb);
+    Mat YCrCb_image;
+    cvtColor(resize_img, YCrCb_image, CV_BGR2YCrCb);
 
     // YCrCbそれぞれのチャンネルに分解
     vector<Mat> planes;
     split(resize_img, planes);
 
-    // 結果表示
-    imshow("ycrcb_image", ycrcb_image);
-    imshow("y_image", planes[0]);
-    imshow("cr_image", planes[1]);
-    imshow("cb_image", planes[2]);
+    // 出力用にクローンをとっておく
+    Mat Y  = planes[0].clone();
+    Mat Cr = planes[1].clone();
+    Mat Cb = planes[2].clone();
 
-    imwrite("../img/kadai6/ycrcb_image.png", ycrcb_image);
-    imwrite("../img/kadai6/y_image.png", planes[0]);
-    imwrite("../img/kadai6/cr_image.png", planes[1]);
-    imwrite("../img/kadai6/cb_image.png", planes[2]);
+    // 結果表示
+    imshow("ycrcb_image", YCrCb_image);
+    imshow("y_image", Y);
+    imshow("cr_image", Cr);
+    imshow("cb_image", Cb);
+
+    imwrite("../img/kadai6/YCbCr.png", YCrCb_image);
+    imwrite("../img/kadai6/Y.png", Y);
+    imwrite("../img/kadai6/Cr.png", Cr);
+    imwrite("../img/kadai6/Cb.png", Cb);
 
     // キーボードが押されるまでwait
     waitKey(0);
