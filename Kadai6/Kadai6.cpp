@@ -56,67 +56,30 @@ int main()
     Mat resize_img;
     my_resize(src_img, resize_img);
 
-    // BGRからYCrCbへ変換
-    Mat YCrCb_image;
-    cvtColor(resize_img, YCrCb_image, COLOR_BGR2YCrCb);
-
-    // YCrCbそれぞれのチャンネルに分解
+    // BGRそれぞれのチャンネルに分解
     vector<Mat> planes;
-    split(YCrCb_image, planes);
+    split(resize_img, planes);
 
-    // 出力用にクローンをとっておく
-    Mat Y  = planes[0].clone();
-    Mat Cr = planes[1].clone();
-    Mat Cb = planes[2].clone();
-
-    // CrとCbを 30 x 30 にリサイズ
+    // GとRを 30 x 30 にリサイズ
     resize(planes[1], planes[1],
         Size(), 30. / resize_img.cols, 30. / resize_img.rows);
     resize(planes[2], planes[2],
         Size(), 30. / resize_img.cols, 30. / resize_img.rows);
 
-    // 出力用にクローンをとっておく
-    Mat Cr2 = planes[1].clone();
-    Mat Cb2 = planes[2].clone();
-
-    // CrとCbを元の大きさに再リサイズ
+    // GとRを元の大きさに再リサイズ
     resize(planes[1], planes[1],
         Size(), resize_img.cols / 30., resize_img.rows / 30.);
     resize(planes[2], planes[2],
         Size(), resize_img.cols / 30., resize_img.rows / 30.);
-
-    // 出力用にクローンをとっておく
-    Mat Cr3 = planes[1].clone();
-    Mat Cb3 = planes[2].clone();
 
     // 分割したチャンネルを統合
     Mat out;
     merge(planes, out);
-    // YCrCbからBGRへ変換
-    cvtColor(out, out, COLOR_YCrCb2BGR);
 
     // 結果表示
-    imshow("resize", resize_img);
-    imshow("YCrCb", YCrCb_image);
-    imshow("Y", Y);
-    imshow("Cr", Cr);
-    imshow("Cb", Cb);
-    imshow("Cr2", Cr2);
-    imshow("Cb2", Cb2);
-    imshow("Cr3", Cr3);
-    imshow("Cb3", Cb3);
-    imshow("out", out);
+    imshow("kousatsu", out);
 
-    imwrite("../img/kadai6/resize_img.png", resize_img);
-    imwrite("../img/kadai6/YCrCb.png", YCrCb_image);
-    imwrite("../img/kadai6/Y.png", Y);
-    imwrite("../img/kadai6/Cr.png", Cr);
-    imwrite("../img/kadai6/Cb.png", Cb);
-    imwrite("../img/kadai6/Cr2.png", Cr2);
-    imwrite("../img/kadai6/Cb2.png", Cb2);
-    imwrite("../img/kadai6/Cr3.png", Cr3);
-    imwrite("../img/kadai6/Cb3.png", Cb3);
-    imwrite("../img/kadai6/out.png", out);
+    imwrite("../img/kadai6/kousatsu.png", out);
 
     // キーボードが押されるまでwait
     waitKey(0);
