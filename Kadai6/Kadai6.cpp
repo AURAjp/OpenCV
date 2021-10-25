@@ -1,4 +1,5 @@
 ﻿#include <opencv2/opencv.hpp>
+#include <vector>
 
 using namespace cv;
 
@@ -59,10 +60,20 @@ int main()
     Mat ycrcb_image;
     cvtColor(resize_img, ycrcb_image, CV_BGR2YCrCb);
 
+    // YCrCbそれぞれのチャンネルに分解
+    vector<Mat> planes;
+    split(resize_img, planes);
+
     // 結果表示
     imshow("ycrcb_image", ycrcb_image);
+    imshow("y_image", planes[0]);
+    imshow("cr_image", planes[1]);
+    imshow("cb_image", planes[2]);
 
     imwrite("../img/kadai6/ycrcb_image.png", ycrcb_image);
+    imwrite("../img/kadai6/y_image.png", planes[0]);
+    imwrite("../img/kadai6/cr_image.png", planes[1]);
+    imwrite("../img/kadai6/cb_image.png", planes[2]);
 
     // キーボードが押されるまでwait
     waitKey(0);
