@@ -23,12 +23,20 @@ OpenCV
 - IDFT
 - ローパス
 
+## 課題5
+
+- MedianFilterを自作
+
 # 環境構築
 
 ## 動作環境
 
 - OpenCV 2.4.13
 - C++ 20
+
+## 開発環境
+
+- Visual Studio 2019
 
 ## ビルド
 
