@@ -62,7 +62,7 @@ int main()
 
     // YCrCbそれぞれのチャンネルに分解
     vector<Mat> planes;
-    split(resize_img, planes);
+    split(YCrCb_image, planes);
 
     // 出力用にクローンをとっておく
     Mat Y  = planes[0].clone();
@@ -71,9 +71,9 @@ int main()
 
     // CrとCbを 30 x 30 にリサイズ
     resize(planes[1], planes[1],
-        Size(), 30. / planes[1].cols, 30. / planes[1].rows);
+        Size(), 30. / resize_img.cols, 30. / resize_img.rows);
     resize(planes[2], planes[2],
-        Size(), 30. / planes[2].cols, 30. / planes[2].rows);
+        Size(), 30. / resize_img.cols, 30. / resize_img.rows);
 
     // 出力用にクローンをとっておく
     Mat Cr2 = planes[1].clone();
