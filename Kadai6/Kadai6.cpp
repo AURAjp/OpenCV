@@ -58,7 +58,7 @@ int main()
 
     // BGRからYCrCbへ変換
     Mat YCrCb_image;
-    cvtColor(resize_img, YCrCb_image, CV_BGR2YCrCb);
+    cvtColor(resize_img, YCrCb_image, COLOR_BGR2YCrCb);
 
     // YCrCbそれぞれのチャンネルに分解
     vector<Mat> planes;
@@ -89,8 +89,11 @@ int main()
     Mat Cr3 = planes[1].clone();
     Mat Cb3 = planes[2].clone();
 
+    // 分割したチャンネルを統合
     Mat out;
     merge(planes, out);
+    // YCrCbからBGRへ変換
+    cvtColor(out, out, COLOR_YCrCb2BGR);
 
     // 結果表示
     imshow("resize", resize_img);
