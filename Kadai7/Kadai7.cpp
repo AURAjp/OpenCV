@@ -46,19 +46,19 @@ void my_resize(const Mat& in, Mat& out)
 
 int main()
 {
-    //! 画像の読み込み
-    const Mat src_img = imread("../img/in.jpg", IMREAD_COLOR);
+    //! 画像をグレースケールで読み込み
+    const Mat src_img = imread("../img/in.jpg", IMREAD_GRAYSCALE);
     // 読み込んだ画像のNULLチェック
     if (src_img.empty()) { return -1; }
 
     // 読み込んだ画像のリサイズ
-    Mat resize_img;
-    my_resize(src_img, resize_img);
+    Mat in_img;
+    my_resize(src_img, in_img);
 
     // 結果表示
-    imshow("resize", resize_img);
+    imshow("in", in_img);
 
-    imwrite("../img/kadai7/resize_img.png", resize_img);
+    imwrite("../img/kadai7/in.png", in_img);
 
     // キーボードが押されるまでwait
     waitKey(0);
