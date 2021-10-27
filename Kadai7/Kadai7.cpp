@@ -25,10 +25,10 @@ using namespace cv;
 int main()
 {
     //! 画像をグレースケールで読み込み
-    const Mat in_img = imread("../img/kadai7/in.png", IMREAD_GRAYSCALE);
+    const Mat in_img  = imread("../img/kadai7/in.png" , IMREAD_GRAYSCALE);
     const Mat tmp_img = imread("../img/kadai7/tmp.png", IMREAD_GRAYSCALE);
     // 読み込んだ画像のNULLチェック
-    if (in_img.empty() && tmp_img.empty()) { return -1; }
+    if (in_img.empty() || tmp_img.empty()) { return -1; }
 
     //! 類似の箇所の出力結果を保存するための領域
     Mat SSD, CC, ZNCC;
