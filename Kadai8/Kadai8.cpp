@@ -61,7 +61,12 @@ void create_random_image(const Mat& in, Mat& out)
 
     // 出力画像はCV8UC1に戻しておく
     tmp.convertTo(tmp, CV_8UC1);
-    out = tmp;
+
+    // ランダムイメージのサイズを 800 * 450 にする
+    const int pad_width = (800 - tmp.cols) / 2;
+    const int pad_height = (450 - tmp.rows) / 2;
+    copyMakeBorder(tmp, out, pad_height, pad_height, pad_width, pad_width,
+        BORDER_CONSTANT, Scalar(0, 0, 0));
 }
 
 /**
@@ -91,16 +96,8 @@ int main()
     if (src_img.empty()) { return -1; }
 
     // ランダムイメージを生成する
-    Mat random_img;
-    create_random_image(src_img, random_img);
-
-    // ランダムイメージのサイズを 800 * 450 にする
-    const int pad_width  = (800 - random_img.cols) / 2;
-    const int pad_height = (450 - random_img.rows) / 2;
     Mat input_img;
-    copyMakeBorder(random_img, input_img,
-        pad_height, pad_height, pad_width, pad_width,
-        BORDER_CONSTANT, Scalar(0, 0, 0));
+    create_random_image(src_img, input_img);
 
     // テンプレートマッチングを行う
     Mat out_img;
