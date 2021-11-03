@@ -26,7 +26,7 @@ using namespace cv;
 /**
  * ランダム画像を生成する. 
  */
-void createRandomImage(const Mat& in, Mat& out)
+void create_random_image(const Mat& in, Mat& out)
 {
     // 入力画像をCV32FC1に変換しておく
     Mat template_img;
@@ -69,8 +69,9 @@ int main()
     // 読み込んだ画像のNULLチェック
     if (src_img.empty()) { return -1; }
 
-    Mat tmp_img;
-    createRandomImage(src_img, tmp_img);
+    // ランダムイメージを生成する
+    Mat random_img;
+    create_random_image(src_img, random_img);
 
     // 結果表示
     imshow("tmp_img", tmp_img);
