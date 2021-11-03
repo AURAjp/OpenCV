@@ -59,6 +59,8 @@ void create_random_image(const Mat& in, Mat& out)
     vconcat(tmp1, tmp3, tmp);
     vconcat(tmp, tmp2, tmp);
 
+    // 出力画像はCV8UC1に戻しておく
+    tmp.convertTo(tmp, CV_8UC1);
     out = tmp;
 }
 
