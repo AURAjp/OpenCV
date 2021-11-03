@@ -1,4 +1,5 @@
 ﻿#include <opencv2/opencv.hpp>
+#include <vector> 
 
 using namespace cv;
 
@@ -22,22 +23,57 @@ using namespace cv;
 #pragma comment(lib, "opencv_calib3d2413.lib")
 #endif
 
+/**
+ * ランダム画像を生成する. 
+ */
+void createRandomImage(const Mat& in, Mat& out)
+{
+    // 入力画像をCV32FC1に変換しておく
+    Mat template_img;
+    in.convertTo(template_img, CV_32FC1);
+
+    vector<Mat> random;
+
+    Point2f center = Point2f(template_img.cols / 2.f, template_img.rows / 2.f);
+    double scale = 1.;
+    for (int i = 0; i < 15; i++)
+    {
+        double degree = 24. * i;
+        Mat change_src = getRotationMatrix2D(center, degree, scale);
+        Mat rotated_img;
+        warpAffine(template_img, rotated_img, change_src, template_img.size());
+        random.push_back(rotated_img);
+    }
+
+    Mat tmp;
+    Mat tmp1 = random[0];
+    Mat tmp2 = random[5];
+    Mat tmp3 = random[10];
+
+    for (int i = 1; i < 5; i++)
+    {
+        hconcat(tmp1, random[i], tmp1);
+        hconcat(tmp2, random[i + 5], tmp2);
+        hconcat(tmp3, random[i + 10], tmp3);
+    }
+    vconcat(tmp1, tmp3, tmp);
+    vconcat(tmp, tmp2, tmp);
+
+    out = tmp;
+}
+
 int main()
 {
     //! 画像をグレースケールで読み込み
-    const Mat template_img = imread("../img/kadai8/template.png", IMREAD_GRAYSCALE);
-
+    const Mat src_img = imread("../img/kadai8/template.png", IMREAD_GRAYSCALE);
     // 読み込んだ画像のNULLチェック
-    if (template_img.empty()) { return -1; }
+    if (src_img.empty()) { return -1; }
 
-    constexpr int width = 800;
-    constexpr int height = 450;
-
-    const Mat black_img = Mat::zeros(height, width, CV_8UC1);
+    Mat tmp_img;
+    createRandomImage(src_img, tmp_img);
 
     // 結果表示
-    imshow("template_img", template_img);
-    imshow("black_img", black_img);
+    imshow("tmp_img", tmp_img);
 
     // キーボードが押されるまでwait
     waitKey(0);
