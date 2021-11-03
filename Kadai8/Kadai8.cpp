@@ -30,8 +30,14 @@ int main()
     // 読み込んだ画像のNULLチェック
     if (template_img.empty()) { return -1; }
 
+    constexpr int width = 800;
+    constexpr int height = 450;
+
+    const Mat black_img = Mat::zeros(height, width, CV_8UC1);
+
     // 結果表示
-    imshow("out", template_img);
+    imshow("template_img", template_img);
+    imshow("black_img", black_img);
 
     // キーボードが押されるまでwait
     waitKey(0);
