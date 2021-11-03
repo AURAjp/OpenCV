@@ -64,6 +64,25 @@ void create_random_image(const Mat& in, Mat& out)
     out = tmp;
 }
 
+/**
+ * 画像をテンプレートマッチングで解析する。
+ * 
+ * @param in 解析対象画像
+ * @param temp テンプレート
+ * @param out 出力画像
+ */
+void analyze_image(const Mat& in, const Mat& tmp, Mat& out)
+{
+    Mat max_pos;
+    matchTemplate(in, tmp, max_pos, CV_TM_CCOEFF_NORMED);
+    Point pos;
+    minMaxLoc(max_pos, NULL, NULL, NULL, &pos);
+
+    out = in.clone();
+    cvtColor(out, out, CV_GRAY2BGR);
+    rectangle(out, Rect(pos.x, pos.y, tmp.cols, tmp.rows), Scalar(0, 0, 255), 2);
+}
+
 int main()
 {
     //! 画像をグレースケールで読み込み
@@ -83,8 +102,13 @@ int main()
         pad_height, pad_height, pad_width, pad_width,
         BORDER_CONSTANT, Scalar(0, 0, 0));
 
+    // テンプレートマッチングを行う
+    Mat out_img;
+    analyze_image(input_img, src_img, out_img);
+
     // 結果表示
-    imshow("tmp_img", tmp_img);
+    imshow("input_img", input_img);
+    imshow("out_img", out_img);
 
     // キーボードが押されるまでwait
     waitKey(0);
