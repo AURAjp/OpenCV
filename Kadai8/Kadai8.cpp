@@ -82,11 +82,11 @@ void analyze_image(const Mat& in, const Mat& tmp, Mat& out)
     cvtColor(out, out, CV_GRAY2BGR);
 
     Point2f center = Point2f(tmp.cols / 2.f, tmp.rows / 2.f);
-    constexpr double scale = 1;
-    constexpr double degree = 24;
+    constexpr int scale = 1;
+    constexpr int degree = 24;
 
-    // 回転させながら照合を行う
-    for (double i = 0; i < 360; i += degree)
+    // 24度ずつ回転させながら照合を行う
+    for (int i = 0; i < 360; i += degree)
     {
         Mat change_src = getRotationMatrix2D(center, i, scale);
         Mat rotated_img;
