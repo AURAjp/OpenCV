@@ -75,6 +75,14 @@ int main()
     Mat random_img;
     create_random_image(src_img, random_img);
 
+    // ランダムイメージのサイズを 800 * 450 にする
+    const int pad_width  = (800 - random_img.cols) / 2;
+    const int pad_height = (450 - random_img.rows) / 2;
+    Mat input_img;
+    copyMakeBorder(random_img, input_img,
+        pad_height, pad_height, pad_width, pad_width,
+        BORDER_CONSTANT, Scalar(0, 0, 0));
+
     // 結果表示
     imshow("tmp_img", tmp_img);
 
